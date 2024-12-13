@@ -1,0 +1,23 @@
+Vagrant.configure("2") do |config|
+  config.vm.provider :libvirt do |libvirt|
+    # Use the environment variable for Libvirt URI
+    libvirt.uri = ENV['LIBVIRT_URI']  # Replace with your remote Libvirt URI if necessary
+    libvirt.memory = 1024             # VM memory in MB
+    libvirt.cpus = 2                 # VM CPU count
+    
+  end
+  # Configure macvtap network interface
+  config.vm.network :public_network, :dev => ENV['NETWORK_INTERFACE'], :mode => 'bridge', :type => 'direct', :source => 'eth0'
+  # Define the VM name using an environment variable
+  config.vm.define ENV['VM_NAME']    # VM name from environment variable
+  
+  config.vm.hostname = ENV['VM_NAME'] # VM hostname from environment variable
+
+  # setup storage
+  
+
+  # You can also specify the box to use for your VM
+  config.vm.box = ENV['DISTRO']      # Distro name from environment variable
+
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [".vagrant/"]
+end
