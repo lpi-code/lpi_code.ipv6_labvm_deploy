@@ -1,0 +1,45 @@
+- name: Install nginx
+  ansible.builtin.package:
+    name: nginx
+    state: present
+  
+- name: Start nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Install certbot
+  ansible.builtin.package:
+    name: certbot
+    state: present
+
+- name: Install certbot nginx
+  ansible.builtin.package:
+    name: python3-certbot-nginx
+    state: present
+
+- name: Install certbot-dns-cloudflare plugin
+  ansible.builtin.package:
+    name: python3-certbot-dns-cloudflare
+    state: present
+
+- name: Template cloudflare
+  ansible.builtin.template:
+    src: cloudflare.ini.j2
+    dest: /root/.cloudflare.ini
+    mode: 0600
+
+- name: Obtain certificate with cloudflare
+  ansible.builtin.command:
+    cmd: "certbot certonly --dns-cloudflare --dns-cloudflare-credentials /root/.cloudflare.ini -d '{{ ansible_hostname }}.{{ cloudflare_zone }}' --non-interactive --agree-tos --email noreply@{{ cloudflare_zone }}"
+
+- name: Install certificate with nginx
+  ansible.builtin.command:
+    cmd: "certbot --nginx -d '{{ ansible_hostname }}.{{ cloudflare_zone }}' --non-interactive --agree-tos --email noreply@{{ cloudflare_zone }}"
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+    enabled: true

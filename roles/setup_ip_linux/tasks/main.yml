@@ -56,3 +56,11 @@
 - name: Setup ipv4
   ansible.builtin.include_tasks:
     file: ipv4.yml
+
+- name: Setup cloudflare
+  ansible.builtin.include_tasks:
+    file: cloudflare.yml
+  
+- name: Setup nginx
+  ansible.builtin.include_tasks:
+    file: nginx.yml

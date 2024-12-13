@@ -1,0 +1,12 @@
+- name: Setup cloudflare proxy domain
+  community.general.cloudflare_dns:
+    zone: "{{ cloudflare_zone }}"
+    record: "{{ ansible_hostname }}"
+    type: AAAA
+    value: "{{ ipv6_address }}"
+    proxied: true
+    state: present
+    api_token: "{{ cloudflare_api_token }}"
+  when: ipv6_address is defined
+  delegate_to: localhost
+  connection: local

@@ -27,5 +27,7 @@ Vagrant.configure("2") do |config|
     # Optionally, if your VM needs a specific SSH user, you can configure it:
     # ansible.user = "vagrant"
     # Set version
+    # Use ansible vault inventory file
+
   end
 end
