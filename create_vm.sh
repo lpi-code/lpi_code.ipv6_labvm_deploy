@@ -57,27 +57,15 @@ launch_vagrant_vm() {
   echo "Creating Vagrantfile from template..."
   cd vagrant
   echo "Launching Vagrant VM..."
-  vagrant up --debug
+  vagrant up --provision
 }
 
-# Function to run Ansible playbook with custom inventory (encrypted by Ansible Vault)
-run_ansible_playbook() {
-  echo "Running Ansible playbook..."
-
-  # Custom Inventory Path (Ansible Vault encrypted file)
-  INVENTORY_PATH="inventory/hosts.yml"  # Change this to your actual encrypted inventory file
-  PLAYBOOK_PATH="playbook.yml"  # Specify the path to your playbook
-  
-  # Run ansible playbook with Ansible Vault encrypted inventory
-  ansible-playbook -i "$INVENTORY_PATH" "$PLAYBOOK_PATH" --vault-password-file .vault_pass.txt
-}
 
 # Main function to execute the flow
 main() {
   get_vm_name
   choose_distribution
   launch_vagrant_vm
-  run_ansible_playbook
 }
 
 # Execute main function
