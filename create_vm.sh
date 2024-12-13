@@ -51,7 +51,7 @@ launch_vagrant_vm() {
   export VM_NAME
   export DISTRO
   export LIBVIRT_URI
-  export NETWORK_INTERFACE="wlp7s0"
+  export NETWORK_INTERFACE="eth0"
 
   # Use envsubst to replace placeholders in Vagrantfile.template
   echo "Creating Vagrantfile from template..."

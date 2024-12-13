@@ -1,0 +1,13 @@
+- name: Get facts
+  ansible.builtin.setup:
+    filter: ansible_interfaces  # Only get the interfaces facts
+
+- name: Get public IPv6 address
+  ansible.builtin.set_fact:
+    ipv6_address_list: "{{ ansible_facts[latest_interface].ipv6 }}"
+
+- name: Get public IPv6 address
+  ansible.builtin.set_fact:
+    ipv6_address: "{{ item.address }}"
+  with_items: "{{ ipv6_address_list }}"
+  when: item.scope == "global"

@@ -1,0 +1,31 @@
+- name: Force dhcp with dhclient
+  ansible.builtin.command:
+    cmd: dhclient -v -i "{{ latest_interface }}"
+  when: ansible_facts[latest_interface].ipv4.address is not defined
+
+- name: Regather facts
+  ansible.builtin.setup:
+    filter: ansible_interfaces
+  when: ansible_facts[latest_interface].ipv4.address is not defined
+
+- name: Debug
+  ansible.builtin.debug:
+    var: ansible_facts[latest_interface].ipv4
+  when: ansible_facts[latest_interface].ipv4.address is not defined
+
+- name: Get current dynamic ipv4_address
+  ansible.builtin.set_fact:
+    ipv4_address: "{{ ansible_facts[latest_interface].ipv4.address }}"
+  when: ansible_facts[latest_interface].ipv4.address is defined
+
+
+- name: Ensure ipv4 is static
+  lpi_code.freebox.dhcp:
+    ip: "{{ ipv4_address }}"
+    mac: "{{ mac_address }}"
+  delegate_to: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  when: ansible_facts[latest_interface].ipv4.address is defined
+

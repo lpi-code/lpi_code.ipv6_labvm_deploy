@@ -1,0 +1,58 @@
+---
+# tasks file for setup_ipv6_linux
+
+- name: Get latest interface
+  ansible.builtin.set_fact:
+    latest_interface: "{{ ansible_interfaces | sort | select('search', '^eth') | last }}"
+
+- name: Get mac address
+  ansible.builtin.set_fact:
+    mac_address: "{{ ansible_facts[latest_interface].macaddress }}"
+
+- name: Install network manager
+  ansible.builtin.package:
+    name: network-manager
+    state: present
+
+- name: Make sure /etc/NetworkManager/NetworkManager.conf has managed set to true
+  ansible.builtin.replace:
+    path: /etc/NetworkManager/NetworkManager.conf
+    regexp: '^managed=false'
+    replace: 'managed=true'
+  notify: "restart network-manager"
+
+- name: Force dhcp
+  community.general.nmcli:
+    conn_name: "{{ latest_interface }}"
+    method6: dhcp
+    method4: auto
+    state: up
+    type: ethernet
+    autoconnect: true
+
+- name: Install pip
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+  delegate_to: localhost
+  connection: local
+
+- name: Install freebox-api
+  ansible.builtin.pip:
+    name: freebox-api
+    state: present
+  delegate_to: localhost
+  connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Setup ipv6
+  ansible.builtin.include_tasks:
+    file: ipv6.yml
+
+- name: Setup ipv4
+  ansible.builtin.include_tasks:
+    file: ipv4.yml

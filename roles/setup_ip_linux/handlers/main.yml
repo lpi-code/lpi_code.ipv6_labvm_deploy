@@ -1,0 +1,8 @@
+---
+# handlers file for setup_ipv6_linux
+
+- name: restart network-manager
+  ansible.builtin.service:
+    name: NetworkManager
+    state: restarted
+    enabled: true

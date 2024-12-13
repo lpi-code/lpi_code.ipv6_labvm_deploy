@@ -1,0 +1,23 @@
+- name: Enable IPv6
+  sysctl:
+    name: "{{ item }}"
+    value: 0
+    state: present
+    reload: true
+  with_items:
+    - net.ipv6.conf.all.disable_ipv6
+    - net.ipv6.conf.default.disable_ipv6
+
+
+- name: Get ipv6 address
+  ansible.builtin.include_tasks:
+    file: get_ipv6_address.yml
+
+- name: Manually force dhcp with dhclient
+  ansible.builtin.command:
+    cmd: dhclient -v -6 -i "{{ latest_interface }}"
+  when: ipv6_address is not defined
+
+- name: Get ipv6 address
+  ansible.builtin.include_tasks:
+    file: get_ipv6_address.yml
