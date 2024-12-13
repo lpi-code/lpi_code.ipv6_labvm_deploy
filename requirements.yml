@@ -1,3 +1,6 @@
 collections:
   - name: community.general
     version: 10.1.0
+  # Use a git repository as a collection
+  - name:  git+https://github.com/lpi-code/lpi_code.freebox
+    version: main
